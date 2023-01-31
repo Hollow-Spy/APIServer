@@ -25,13 +25,13 @@ public class NetworkGameObject : MonoBehaviour
         //create a delimited string with the required data
         //note if we put strings in this we might want to check they don’t have a semicolon or use a different delimiter like |
         string returnVal = uniqueNetworkID + ";" +
-                            transform.position.x + ";" +
-                            transform.position.y + ";" +
-                            transform.position.z + ";" +
-                            transform.rotation.x + ";" +
-                            transform.rotation.y + ";" +
-                            transform.rotation.z + ";" +
-                            transform.rotation.w + ";"
+                            "PosX" + transform.position.x + ";" +
+                            "PosY" + transform.position.y + ";" +
+                            "PosZ" + transform.position.z + ";" +
+                            "RotX" + transform.rotation.x + ";" +
+                            "RotY" + transform.rotation.y + ";" +
+                            "RosZ" + transform.rotation.z + ";" +
+                            "RosW" + transform.rotation.w + ";"
                             ;
         return Encoding.ASCII.GetBytes(returnVal);
     }
@@ -45,6 +45,7 @@ public class NetworkGameObject : MonoBehaviour
     }
 
    
+
 
 
 }

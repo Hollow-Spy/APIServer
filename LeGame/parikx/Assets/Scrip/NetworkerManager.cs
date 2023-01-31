@@ -25,7 +25,7 @@ public class NetworkerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(SendNetworkUpdates());
+       
 
         netObjects = new List<NetworkGameObject>();
         netObjects.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
@@ -44,6 +44,7 @@ public class NetworkerManager : MonoBehaviour
         client.BeginReceive(ReceiveAsyncCallback, state);
 
         RequestUIDs();
+        StartCoroutine(SendNetworkUpdates());
     }
 
 

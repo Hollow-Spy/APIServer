@@ -10,15 +10,15 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 class SuperServerSupreme
 {
-    Dictionary<int, byte[]> gameState; //initialise this at the start of the program
-    List<IPEndPoint> connectedClients;
+    static Dictionary<int, byte[]> gameState; //initialise this at the start of the program
+    static List<IPEndPoint> connectedClients;
     static int lastAssignedGlobalID = 12;
 
     static public void Main(String[] args)
     {
         int recv;
-        Dictionary<int, byte[]> gameState = new Dictionary<int, byte[]>();
-        List<IPEndPoint> connectedClients = new List<IPEndPoint>();
+        gameState = new Dictionary<int, byte[]>();
+        connectedClients = new List<IPEndPoint>();
 
         byte[] data = new byte[128]; // the (expected) packet size. Powers of 2 are good. Typically for a game we want small, optimised packets travelling fast. The 1024 bytes chosen here is arbitrary – you should adjust it.
 
@@ -45,43 +45,52 @@ class SuperServerSupreme
 
         while (true)
         {
-            data = new byte[1024];
-
-
-            foreach (IPEndPoint ep in connectedClients)
-
-            {
-                Console.WriteLine("Sending gamestate to " + ep.ToString());
-                if (ep.Port != 0)
-                {
-                    foreach (KeyValuePair<int, byte[]> kvp in gameState)
-                    {
-                        newsock.SendTo(kvp.Value, kvp.Value.Length, SocketFlags.None, ep);
-                    }
-                }
-            }
-
-
-
+           data = new byte[1024];
 
 
             recv = newsock.ReceiveFrom(data, ref Remote);
             //recv is now a byte array containing whatever just arrived from the client
+
+
+
+            bool IPisInList = false;
+            IPEndPoint senderIPEndPoint = (IPEndPoint)Remote;
+            foreach (IPEndPoint ep in connectedClients)
+            {
+                if (senderIPEndPoint.ToString().Equals(ep.ToString())) IPisInList = true;
+            }
+            if (!IPisInList)
+            {
+                connectedClients.Add(senderIPEndPoint);
+                Console.WriteLine("A new client just connected. There are now " + connectedClients.Count + " clients.");
+            }
+
 
             Console.WriteLine("da mesage recierved from" + Remote.ToString());
             //this will show the client’s unique id
             Console.WriteLine(Encoding.ASCII.GetString(data, 0, recv));
             //and this will show the data
 
-            string hi = "look guys, he connected";
-            data = Encoding.ASCII.GetBytes(hi);
+            string messageRecieved = Encoding.ASCII.GetString(data, 0, recv);
+
+          
             //remember we need to convert anything to bytes to send it
+
+           
+
 
             newsock.SendTo(data, data.Length, SocketFlags.None, Remote);
             //send the bytes for the ‘hi’ string to the Remote that just connected. First parameter is the data, 2nd is packet size, 3rd is any flags we want, and 4th is destination client.
 
 
-            string messageRecieved = Encoding.ASCII.GetString(data, 0, recv);
+
+
+
+
+
+
+
+          
 
             if (messageRecieved.Contains("I need a UID for local object:"))
             {
@@ -121,23 +130,20 @@ class SuperServerSupreme
             }
 
 
-            bool IPisInList = false;
-            IPEndPoint senderIPEndPoint = (IPEndPoint)Remote;
+
+
             foreach (IPEndPoint ep in connectedClients)
+
             {
-                if (senderIPEndPoint.ToString().Equals(ep.ToString())) IPisInList = true;
+                Console.WriteLine("Sending gamestate to " + ep.ToString());
+                if (ep.Port != 0)
+                {
+                    foreach (KeyValuePair<int, byte[]> kvp in gameState.ToList())
+                    {
+                        newsock.SendTo(kvp.Value, kvp.Value.Length, SocketFlags.None, ep);
+                    }
+                }
             }
-            if (!IPisInList)
-            {
-                connectedClients.Add(senderIPEndPoint);
-                Console.WriteLine("A new client just connected. There are now " + connectedClients.Count + " clients.");
-            }
-
-
-
-
-          
-
 
 
 
