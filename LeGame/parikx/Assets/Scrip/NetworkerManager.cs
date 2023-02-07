@@ -22,10 +22,24 @@ public class NetworkerManager : MonoBehaviour
     static UdpState state;
     public List<NetworkGameObject> netObjects;
 
+    [SerializeField] GameObject networkAvatar;
+    public List<NetworkGameObject> worldState;
+
+    string receiveString="";
+
     // Start is called before the first frame update
+
+
+    private void Awake()
+    {
+        StartCoroutine(updateWorldState());
+    }
+
     void Start()
     {
-       
+        worldState = new List<NetworkGameObject>();
+        worldState.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
+
 
         netObjects = new List<NetworkGameObject>();
         netObjects.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
@@ -65,6 +79,71 @@ public class NetworkerManager : MonoBehaviour
         }
     }
 
+    IEnumerator updateWorldState()
+    {
+        while (true)
+        {
+            //read in the current world state as all network game objects in the scene
+            worldState = new List<NetworkGameObject>();
+            worldState.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
+
+            //cache the recieved packet string - we'll use that later to suspend the couroutine until it changes
+            string previousRecieveString = receiveString;
+
+            //if it's an object update, process it, otherwise skip
+            if (receiveString.Contains("Object data;"))
+            {
+                //we'll want to know if an object with this global id is already in the game world
+                bool objectIsAlreadyInWorld = false;
+
+                //we'll also want to exclude any invalid packets with a bad global id
+                if (GetGlobalIDFromPacket(receiveString) != 0)
+                {
+                    //for every networked gameobject in the world
+                    foreach (NetworkGameObject ngo in worldState)
+                    {
+                        //if it's unique ID matches the packet, update it's position from the packet
+                        if (ngo.uniqueNetworkID == GetGlobalIDFromPacket(receiveString))
+                        {
+                            //only update it if we don't own it - you might want to try disabling and seeing the effect
+                            if (!ngo.isLocallyOwned)
+                            {
+                                ngo.fromPacket(receiveString);
+
+                            }
+                            //if we have any uniqueID matches, our object is in the world
+                            objectIsAlreadyInWorld = true;
+                        }
+
+                    }
+                    Debug.Log(receiveString);
+
+                    //if it's not in the world, we need to spawn it
+                    if (!objectIsAlreadyInWorld)
+                    {
+                        GameObject otherPlayerAvatar = Instantiate(networkAvatar);
+                        //update its component properties from the packet
+                        otherPlayerAvatar.GetComponent<NetworkGameObject>().uniqueNetworkID = GetGlobalIDFromPacket(receiveString);
+                        otherPlayerAvatar.GetComponent<NetworkGameObject>().fromPacket(receiveString);
+                    }
+                }
+
+            }
+
+            //wait until the incoming string with packet data changes then iterate again
+
+            yield return new WaitUntil(() => !receiveString.Equals(previousRecieveString));
+        }
+    }
+
+
+
+
+    int GetGlobalIDFromPacket(String packet)
+    {
+        return Int32.Parse(packet.Split(';')[1]);
+    }
+
 
     void ReceiveAsyncCallback(IAsyncResult result)
     {
@@ -73,7 +152,7 @@ public class NetworkerManager : MonoBehaviour
 
         byte[] receiveBytes = client.EndReceive(result, ref ep); //get the packet
         
-        string receiveString = Encoding.ASCII.GetString(receiveBytes); //decode the packet
+         receiveString = Encoding.ASCII.GetString(receiveBytes); //decode the packet
         Debug.Log("Received " + receiveString + " from " + ep.ToString()); //display the packet
 
         if (receiveString.Contains("Assigned UID:"))
@@ -99,9 +178,18 @@ public class NetworkerManager : MonoBehaviour
                 }
             }
         }
+        else
+        {
+            if (receiveString.Contains("Object data;"))
+            {
+                  
+                    string globalId = receiveString.Split(";")[1];
+     
+            }
+        }
 
         //continue to loop
-      
+
         client.BeginReceive(ReceiveAsyncCallback, state); //self-callback, meaning this loops infinitely
     }
 
@@ -131,7 +219,7 @@ public class NetworkerManager : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.00001f);
         }
     }
 

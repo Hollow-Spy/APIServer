@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\limah\\Desktop\\APIServer\\LeServer\\SuperServerSupreme\\SuperServerSupreme\\SuperServerSupreme.csproj": {}
+    "C:\\Users\\limah\\Desktop\\feb\\APIServer\\LeServer\\SuperServerSupreme\\SuperServerSupreme\\SuperServerSupreme.csproj": {}
   },
   "projects": {
-    "C:\\Users\\limah\\Desktop\\APIServer\\LeServer\\SuperServerSupreme\\SuperServerSupreme\\SuperServerSupreme.csproj": {
+    "C:\\Users\\limah\\Desktop\\feb\\APIServer\\LeServer\\SuperServerSupreme\\SuperServerSupreme\\SuperServerSupreme.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\limah\\Desktop\\APIServer\\LeServer\\SuperServerSupreme\\SuperServerSupreme\\SuperServerSupreme.csproj",
+        "projectUniqueName": "C:\\Users\\limah\\Desktop\\feb\\APIServer\\LeServer\\SuperServerSupreme\\SuperServerSupreme\\SuperServerSupreme.csproj",
         "projectName": "SuperServerSupreme",
-        "projectPath": "C:\\Users\\limah\\Desktop\\APIServer\\LeServer\\SuperServerSupreme\\SuperServerSupreme\\SuperServerSupreme.csproj",
+        "projectPath": "C:\\Users\\limah\\Desktop\\feb\\APIServer\\LeServer\\SuperServerSupreme\\SuperServerSupreme\\SuperServerSupreme.csproj",
         "packagesPath": "C:\\Users\\limah\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\limah\\Desktop\\APIServer\\LeServer\\SuperServerSupreme\\SuperServerSupreme\\obj\\",
+        "outputPath": "C:\\Users\\limah\\Desktop\\feb\\APIServer\\LeServer\\SuperServerSupreme\\SuperServerSupreme\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

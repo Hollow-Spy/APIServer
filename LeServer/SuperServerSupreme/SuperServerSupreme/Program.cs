@@ -78,8 +78,8 @@ class SuperServerSupreme
 
            
 
-
-            newsock.SendTo(data, data.Length, SocketFlags.None, Remote);
+            //comment here
+            //newsock.SendTo(data, data.Length, SocketFlags.None, Remote);
             //send the bytes for the ‘hi’ string to the Remote that just connected. First parameter is the data, 2nd is packet size, 3rd is any flags we want, and 4th is destination client.
 
 
@@ -112,7 +112,10 @@ class SuperServerSupreme
             {
                 //get the global id from the packet
                 Console.WriteLine(messageRecieved);
-                string globalId = messageRecieved.Substring(0, messageRecieved.IndexOf(';'));
+
+                string temp = messageRecieved.Substring(messageRecieved.IndexOf(';')+ 1, messageRecieved.Length - (messageRecieved.IndexOf(';') + 1) );
+               
+                string globalId = temp.Substring(0, temp.IndexOf(';') );
                 int intId = Int32.Parse(globalId);
                 if (gameState.ContainsKey(intId))
                 { //if true, we're already tracking the object
@@ -138,6 +141,8 @@ class SuperServerSupreme
                 Console.WriteLine("Sending gamestate to " + ep.ToString());
                 if (ep.Port != 0)
                 {
+                    //remove id 0
+                    gameState.Remove(0);
                     foreach (KeyValuePair<int, byte[]> kvp in gameState.ToList())
                     {
                         newsock.SendTo(kvp.Value, kvp.Value.Length, SocketFlags.None, ep);
