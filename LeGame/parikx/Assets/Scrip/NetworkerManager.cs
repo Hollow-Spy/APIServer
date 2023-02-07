@@ -83,9 +83,12 @@ public class NetworkerManager : MonoBehaviour
     {
         while (true)
         {
+
             //read in the current world state as all network game objects in the scene
             worldState = new List<NetworkGameObject>();
             worldState.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
+            // bool objectIsAlreadyInWorld = false;
+            // string previousRecieveString = receiveString;
 
             //cache the recieved packet string - we'll use that later to suspend the couroutine until it changes
             string previousRecieveString = receiveString;
@@ -118,26 +121,39 @@ public class NetworkerManager : MonoBehaviour
                     }
                     Debug.Log(receiveString);
 
+
+
                     //if it's not in the world, we need to spawn it
                     if (!objectIsAlreadyInWorld)
                     {
-                        GameObject otherPlayerAvatar = Instantiate(networkAvatar);
-                        //update its component properties from the packet
-                        otherPlayerAvatar.GetComponent<NetworkGameObject>().uniqueNetworkID = GetGlobalIDFromPacket(receiveString);
-                        otherPlayerAvatar.GetComponent<NetworkGameObject>().fromPacket(receiveString);
+                        bool isObjectREppeated = false;
+                        int idOfNewObject = GetGlobalIDFromPacket(receiveString);
+                        for (int i = 0; i < worldState.Count; i++)
+                        {
+                            if (worldState[i].uniqueNetworkID == idOfNewObject)
+                                isObjectREppeated = true;
+                        }
+
+                        if (!isObjectREppeated)
+                        {
+                            GameObject otherPlayerAvatar = Instantiate(networkAvatar);
+                            //update its component properties from the packet
+                            otherPlayerAvatar.GetComponent<NetworkGameObject>().uniqueNetworkID = GetGlobalIDFromPacket(receiveString);
+                            otherPlayerAvatar.GetComponent<NetworkGameObject>().fromPacket(receiveString);
+                        }
                     }
+
+
+
+                  
                 }
 
             }
-
             //wait until the incoming string with packet data changes then iterate again
-
             yield return new WaitUntil(() => !receiveString.Equals(previousRecieveString));
+
         }
     }
-
-
-
 
     int GetGlobalIDFromPacket(String packet)
     {
@@ -212,7 +228,7 @@ public class NetworkerManager : MonoBehaviour
 
             foreach (NetworkGameObject netObject in netObjects)
             {
-                if (netObject.isLocallyOwned)
+                if (netObject.isLocallyOwned && netObject.uniqueNetworkID != 0)
                 {
                     client.Send(netObject.toPacket(), netObject.toPacket().Length);
                    
