@@ -108,22 +108,21 @@ class SuperServerSupreme
 
 
             }
-            else if (messageRecieved.Contains(";"))//this is a lazy else - we should really think about a proper identifier at the start of each packet!
+            else if (messageRecieved.Contains("Object data;"))//this is a lazy else - we should really think about a proper identifier at the start of each packet!
             {
                 //get the global id from the packet
                 Console.WriteLine(messageRecieved);
 
+                
                 string temp = messageRecieved.Substring(messageRecieved.IndexOf(';')+ 1, messageRecieved.Length - (messageRecieved.IndexOf(';') + 1) );
                
                 string globalId = temp.Substring(0, temp.IndexOf(';') );
                 int intId = Int32.Parse(globalId);
+                
+              
                 if (gameState.ContainsKey(intId))
                 { //if true, we're already tracking the object
                     gameState[intId] = data; //data being the original bytes of the packet
-
-
-
-
                 }
                 else //the object is new to the game
                 {
