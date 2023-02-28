@@ -97,7 +97,6 @@ GameObject:
   - component: {fileID: 6423891524808395392}
   - component: {fileID: 6423891524808395423}
   - component: {fileID: 6423891524808395395}
-  - component: {fileID: 6423891524808395422}
   - component: {fileID: 6423891524808395396}
   m_Layer: 0
   m_Name: NetworkPlayer
@@ -115,7 +114,7 @@ Transform:
   m_GameObject: {fileID: 6423891524808395421}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.63, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6423891524407882468}
@@ -198,26 +197,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97cf67141b4bb9c44a7a7ff2bc062cc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  p_controller: {fileID: 6423891524808395422}
+  p_controller: {fileID: 0}
   Speed: 5
---- !u!143 &6423891524808395422
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6423891524808395421}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6423891524808395396
 MonoBehaviour:
   m_ObjectHideFlags: 0
