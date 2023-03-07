@@ -59,6 +59,8 @@
     <Compile Include="Assets\Scrip\PlayerControll.cs" />
     <Compile Include="Assets\Scrip\NetworkGameObject.cs" />
     <Compile Include="Assets\Scrip\NetworkerManager.cs" />
+    <Compile Include="Assets\Scrip\PlayerCam.cs" />
+    <Compile Include="Assets\Scrip\CameraHolder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
