@@ -171,6 +171,8 @@ public class NetworkerManager : MonoBehaviour
          receiveString = Encoding.ASCII.GetString(receiveBytes); //decode the packet
         Debug.Log("Received " + receiveString + " from " + ep.ToString()); //display the packet
 
+
+      
         if (receiveString.Contains("Assigned UID:"))
         {
 
@@ -203,6 +205,8 @@ public class NetworkerManager : MonoBehaviour
      
             }
         }
+        
+
 
         //continue to loop
 
@@ -239,10 +243,22 @@ public class NetworkerManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public static void EventPlayerShot(int TargetID,int damage)
     {
- 
+        List<NetworkGameObject> netObjects = new List<NetworkGameObject>();
+        netObjects.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
+        Debug.Log("he");
+        foreach (NetworkGameObject netObject in netObjects)
+        {
+            if (netObject.isLocallyOwned && netObject.uniqueNetworkID != 0)
+            {
+           
 
+                client.Send(netObject.toPlayerShot(TargetID,damage), netObject.toPlayerShot(TargetID,damage).Length);
+
+            }
+        }
     }
+
+   
 }

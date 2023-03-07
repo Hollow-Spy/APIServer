@@ -73,10 +73,10 @@ class SuperServerSupreme
 
             string messageRecieved = Encoding.ASCII.GetString(data, 0, recv);
 
-          
+
             //remember we need to convert anything to bytes to send it
 
-           
+
 
             //comment here
             //newsock.SendTo(data, data.Length, SocketFlags.None, Remote);
@@ -85,51 +85,64 @@ class SuperServerSupreme
 
 
 
-
-
-
-
-
-          
-
             if (messageRecieved.Contains("I need a UID for local object:"))
             {
-               
-                    Console.WriteLine(messageRecieved.Substring(messageRecieved.IndexOf(':')));
 
-                    //parse the string into an into to get the local ID
-                    int localObjectNumber = Int32.Parse(messageRecieved.Substring(messageRecieved.IndexOf(':') + 1));
-                    //assign the ID
-                    string returnVal = ("Assigned UID:" + localObjectNumber + ";" + lastAssignedGlobalID++);
-                    Console.WriteLine(returnVal);
-                    newsock.SendTo(Encoding.ASCII.GetBytes(returnVal), Encoding.ASCII.GetBytes(returnVal).Length, SocketFlags.None, Remote);
-              
+                Console.WriteLine(messageRecieved.Substring(messageRecieved.IndexOf(':')));
+
+                //parse the string into an into to get the local ID
+                int localObjectNumber = Int32.Parse(messageRecieved.Substring(messageRecieved.IndexOf(':') + 1));
+                //assign the ID
+                string returnVal = ("Assigned UID:" + localObjectNumber + ";" + lastAssignedGlobalID++);
+                Console.WriteLine(returnVal);
+                newsock.SendTo(Encoding.ASCII.GetBytes(returnVal), Encoding.ASCII.GetBytes(returnVal).Length, SocketFlags.None, Remote);
+
 
 
 
             }
-            else if (messageRecieved.Contains("Object data;"))//this is a lazy else - we should really think about a proper identifier at the start of each packet!
+            else
             {
-                //get the global id from the packet
-                Console.WriteLine(messageRecieved);
 
-                
-                string temp = messageRecieved.Substring(messageRecieved.IndexOf(';')+ 1, messageRecieved.Length - (messageRecieved.IndexOf(';') + 1) );
-               
-                string globalId = temp.Substring(0, temp.IndexOf(';') );
-                int intId = Int32.Parse(globalId);
-                
-              
-                if (gameState.ContainsKey(intId))
-                { //if true, we're already tracking the object
-                    gameState[intId] = data; //data being the original bytes of the packet
-                }
-                else //the object is new to the game
+                string msg = messageRecieved.Split(";")[0];
+                switch(msg)
                 {
-                    gameState.Add(intId, data);
+                    case "Object data":
+                        //get the global id from the packet
+                        Console.WriteLine(messageRecieved);
 
+
+                        string temp = messageRecieved.Substring(messageRecieved.IndexOf(';') + 1, messageRecieved.Length - (messageRecieved.IndexOf(';') + 1));
+
+                        string globalId = temp.Substring(0, temp.IndexOf(';'));
+                        int intId = Int32.Parse(globalId);
+
+
+                        if (gameState.ContainsKey(intId))
+                        { //if true, we're already tracking the object
+                            gameState[intId] = data; //data being the original bytes of the packet
+                        }
+                        else //the object is new to the game
+                        {
+                            gameState.Add(intId, data);
+
+                        }
+                        break;
+                    case "Player shot":
+                        System.Environment.Exit(0);
+                        break;
                 }
             }
+
+
+            /*
+             else if (messageRecieved.Contains("Object data;"))//this is a lazy else - we should really think about a proper identifier at the start of each packet!
+             {
+
+             }
+            */
+
+
 
 
 

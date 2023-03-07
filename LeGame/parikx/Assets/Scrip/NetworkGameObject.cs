@@ -24,6 +24,21 @@ public class NetworkGameObject : MonoBehaviour
 
     }
 
+
+    public byte[] toPlayerShot(int targetID, int damage) //convert the relevant info on the gameobject to a packet
+    {
+        //create a delimited string with the required data
+        //note if we put strings in this we might want to check they don’t have a semicolon or use a different delimiter like |
+        int Platform = 0; // 0 for unity // 1 unreal
+        string returnVal = "Player shot;" + uniqueNetworkID + ";" +
+                            targetID + ";" +
+                            damage + ";" +
+                            Platform + ";"
+                            ;
+        return Encoding.ASCII.GetBytes(returnVal);
+
+    }
+
     public byte[] toPacket() //convert the relevant info on the gameobject to a packet
     {
         //create a delimited string with the required data
