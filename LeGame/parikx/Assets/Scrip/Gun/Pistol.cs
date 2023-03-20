@@ -16,7 +16,7 @@ public class Pistol : MonoBehaviour
         {
             if(hit.transform.CompareTag("Player"))
             {
-                PlayerShot(hit.transform.GetComponent<NetworkGameObject>().uniqueNetworkID, Damage);
+                PlayerShot(hit.transform.GetComponent<NetworkGameObject>().uniqueNetworkID, Damage); //if we hit something with a player tag we'll send over our unique id and the damage
             }
           
         }
@@ -25,7 +25,7 @@ public class Pistol : MonoBehaviour
   
     void PlayerShot(int TargetID, int dmg)
     {
-        NetworkerManager.EventPlayerShot(TargetID, dmg);
+        NetworkerManager.EventPlayerShot(TargetID, dmg); //sends over to networkmanager the data we need to make a shooting event
 
     }
 }

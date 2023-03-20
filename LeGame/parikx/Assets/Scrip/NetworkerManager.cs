@@ -32,7 +32,7 @@ public class NetworkerManager : MonoBehaviour
 
     private void Awake()
     {
-        StartCoroutine(updateWorldState());
+        StartCoroutine(updateWorldState()); //start updating the world indefinetly
     }
 
     void Start()
@@ -50,7 +50,7 @@ public class NetworkerManager : MonoBehaviour
         ep = new IPEndPoint(IPAddress.Parse("10.0.74.126"), 9050); // endpoint where server is listening (testing localy)
         client.Connect(ep);
 
-        string myMessage = "pisamogu ";
+        string myMessage = "pisamogu ";  //the msgh we'll send over to the server
         byte[] array = Encoding.ASCII.GetBytes(myMessage);
         client.Send(array, array.Length);
 
@@ -67,7 +67,7 @@ public class NetworkerManager : MonoBehaviour
     {
 
         List<NetworkGameObject> netObjects = new List<NetworkGameObject>();
-        netObjects.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
+        netObjects.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>()); //we ask a UNIQUE ID from the server in case one has not been assigned yet
         foreach (NetworkGameObject netObject in netObjects)
         {
             if (netObject.isLocallyOwned && netObject.uniqueNetworkID == 0)
@@ -157,7 +157,7 @@ public class NetworkerManager : MonoBehaviour
 
     int GetGlobalIDFromPacket(String packet)
     {
-        return Int32.Parse(packet.Split(';')[1]);
+        return Int32.Parse(packet.Split(';')[1]); 
     }
 
 
@@ -201,7 +201,7 @@ public class NetworkerManager : MonoBehaviour
             if (receiveString.Contains("Object data;"))
             {
                   
-                    string globalId = receiveString.Split(";")[1];
+                    string globalId = receiveString.Split(";")[1]; //we get the id seperate from the rest of the information string
      
             }
         }
@@ -227,34 +227,32 @@ public class NetworkerManager : MonoBehaviour
     {
         while (true)
         {
-            List<NetworkGameObject> netObjects = new List<NetworkGameObject>();
+            List<NetworkGameObject> netObjects = new List<NetworkGameObject>() 
             netObjects.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
 
             foreach (NetworkGameObject netObject in netObjects)
             {
                 if (netObject.isLocallyOwned && netObject.uniqueNetworkID != 0)
                 {
-                    client.Send(netObject.toPacket(), netObject.toPacket().Length);
+                    client.Send(netObject.toPacket(), netObject.toPacket().Length); //we send information packewts over to the server, likely containing transform data
                    
                 }
             }
 
-            yield return new WaitForSeconds(0.00001f);
+            yield return new WaitForSeconds(0.00001f); //delay between each send
         }
     }
 
     public static void EventPlayerShot(int TargetID,int damage)
     {
-        List<NetworkGameObject> netObjects = new List<NetworkGameObject>();
-        netObjects.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
+        List<NetworkGameObject> netObjects = new List<NetworkGameObject>(); //this is the function responsbile for raycast detection, it will detect a raycast hit from the client side and send it over to the network, similar to movement but not constantly sent
+        netObjects.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>()); //we get all players
         Debug.Log("he");
-        foreach (NetworkGameObject netObject in netObjects)
+        foreach (NetworkGameObject netObject in netObjects) 
         {
             if (netObject.isLocallyOwned && netObject.uniqueNetworkID != 0)
             {
-           
-
-                client.Send(netObject.toPlayerShot(TargetID,damage), netObject.toPlayerShot(TargetID,damage).Length);
+                client.Send(netObject.toPlayerShot(TargetID,damage), netObject.toPlayerShot(TargetID,damage).Length); //if its the player that hit the shot ie the local one, we will call the function over to the server
 
             }
         }

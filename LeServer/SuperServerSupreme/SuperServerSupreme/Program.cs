@@ -55,7 +55,7 @@ class SuperServerSupreme
 
             bool IPisInList = false;
             IPEndPoint senderIPEndPoint = (IPEndPoint)Remote;
-            foreach (IPEndPoint ep in connectedClients)
+            foreach (IPEndPoint ep in connectedClients) //we check how many clients have connected
             {
                 if (senderIPEndPoint.ToString().Equals(ep.ToString())) IPisInList = true;
             }
@@ -76,16 +76,13 @@ class SuperServerSupreme
 
             //remember we need to convert anything to bytes to send it
 
-
-
-            //comment here
             //newsock.SendTo(data, data.Length, SocketFlags.None, Remote);
             //send the bytes for the ‘hi’ string to the Remote that just connected. First parameter is the data, 2nd is packet size, 3rd is any flags we want, and 4th is destination client.
 
 
 
 
-            if (messageRecieved.Contains("I need a UID for local object:"))
+            if (messageRecieved.Contains("I need a UID for local object:"))//in case our object is complaining that it hasnt been assigned an unique id yet
             {
 
                 Console.WriteLine(messageRecieved.Substring(messageRecieved.IndexOf(':')));
@@ -105,7 +102,7 @@ class SuperServerSupreme
             {
 
                 string msg = messageRecieved.Split(";")[0];
-                switch(msg)
+                switch(msg) //in case he has it we'll just check info recieved
                 {
                     case "Object data":
                         //get the global id from the packet
@@ -128,26 +125,14 @@ class SuperServerSupreme
 
                         }
                         break;
-                    case "Player shot":
-                        System.Environment.Exit(0);
+                    case "Player shot": //MESSAGE FOR ME FROM THE FUTURE, IF YOU READ THIS, YOU MIGHT WANT TO CHANGE HOW TO HANDLE A SHOOT EVENT BOI
+                        System.Environment.Exit(0); 
                         break;
                 }
             }
 
 
-            /*
-             else if (messageRecieved.Contains("Object data;"))//this is a lazy else - we should really think about a proper identifier at the start of each packet!
-             {
-
-             }
-            */
-
-
-
-
-
-
-            foreach (IPEndPoint ep in connectedClients)
+            foreach (IPEndPoint ep in connectedClients)  //sending game state over
 
             {
                 Console.WriteLine("Sending gamestate to " + ep.ToString());

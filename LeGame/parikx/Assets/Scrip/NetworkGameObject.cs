@@ -35,7 +35,7 @@ public class NetworkGameObject : MonoBehaviour
                             damage + ";" +
                             Platform + ";"
                             ;
-        return Encoding.ASCII.GetBytes(returnVal);
+        return Encoding.ASCII.GetBytes(returnVal); //we send the information of who shot who and the damage together with the platformer
 
     }
 
@@ -51,7 +51,7 @@ public class NetworkGameObject : MonoBehaviour
                             transform.rotation.x + ";" +
                             transform.rotation.y + ";" +
                             transform.rotation.z + ";" +
-                            transform.rotation.w + ";" +
+                            transform.rotation.w + ";" + //sending over rotation infromation and position
                             Platform + ";"
                             ;
         return Encoding.ASCII.GetBytes(returnVal);
@@ -63,12 +63,12 @@ public class NetworkGameObject : MonoBehaviour
         string[] values = packet.Split(';');
         if (int.Parse(values[9]) == 1) // in case its unreal
         {
-
+            //we handle the information differently by switching y with z 
             transform.position = new Vector3(float.Parse(values[2]), float.Parse(values[4]), float.Parse(values[3]));
            transform.rotation = new Quaternion(float.Parse(values[5]), float.Parse(values[7]), float.Parse(values[6]), float.Parse(values[8]));
         }
         else
-        {
+        {//in case of unity
             transform.position = new Vector3(float.Parse(values[2]), float.Parse(values[3]), float.Parse(values[4]));
             transform.rotation = new Quaternion(float.Parse(values[5]), float.Parse(values[6]), float.Parse(values[7]), float.Parse(values[8]));
         }
