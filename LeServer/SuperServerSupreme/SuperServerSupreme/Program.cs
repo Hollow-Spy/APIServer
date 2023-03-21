@@ -51,8 +51,6 @@ class SuperServerSupreme
             recv = newsock.ReceiveFrom(data, ref Remote);
             //recv is now a byte array containing whatever just arrived from the client
 
-
-
             bool IPisInList = false;
             IPEndPoint senderIPEndPoint = (IPEndPoint)Remote;
             foreach (IPEndPoint ep in connectedClients) //we check how many clients have connected
@@ -102,17 +100,18 @@ class SuperServerSupreme
             {
 
                 string msg = messageRecieved.Split(";")[0];
-                switch(msg) //in case he has it we'll just check info recieved
+                string temp;
+                string globalId;
+                int intId=0;
+                switch (msg) //in case he has it we'll just check info recieved
                 {
                     case "Object data":
                         //get the global id from the packet
                         Console.WriteLine(messageRecieved);
 
-
-                        string temp = messageRecieved.Substring(messageRecieved.IndexOf(';') + 1, messageRecieved.Length - (messageRecieved.IndexOf(';') + 1));
-
-                        string globalId = temp.Substring(0, temp.IndexOf(';'));
-                        int intId = Int32.Parse(globalId);
+                         temp = messageRecieved.Substring(messageRecieved.IndexOf(';') + 1, messageRecieved.Length - (messageRecieved.IndexOf(';') + 1));
+                         globalId = temp.Substring(0, temp.IndexOf(';'));
+                         intId = Int32.Parse(globalId);
 
 
                         if (gameState.ContainsKey(intId))
@@ -126,7 +125,20 @@ class SuperServerSupreme
                         }
                         break;
                     case "Player shot": //MESSAGE FOR ME FROM THE FUTURE, IF YOU READ THIS, YOU MIGHT WANT TO CHANGE HOW TO HANDLE A SHOOT EVENT BOI
-                        System.Environment.Exit(0); 
+
+                        temp = messageRecieved.Substring(messageRecieved.IndexOf(';') + 1, messageRecieved.Length - (messageRecieved.IndexOf(';') + 1));
+                        globalId = temp.Substring(0, temp.IndexOf(';'));
+                        intId = Int32.Parse(globalId);
+
+                        if (gameState.ContainsKey(intId))
+                        { //if true, we're already tracking the object
+                            gameState[intId] = data; //data being the original bytes of the packet
+                        }
+                        else //the object is new to the game
+                        {
+                            gameState.Add(intId, data);
+
+                        }
                         break;
                 }
             }

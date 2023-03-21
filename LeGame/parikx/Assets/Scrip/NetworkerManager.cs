@@ -83,7 +83,7 @@ public class NetworkerManager : MonoBehaviour
     {
         while (true)
         {
-
+        
             //read in the current world state as all network game objects in the scene
             worldState = new List<NetworkGameObject>();
             worldState.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
@@ -119,7 +119,7 @@ public class NetworkerManager : MonoBehaviour
                         }
 
                     }
-                    Debug.Log(receiveString);
+                   // Debug.Log(receiveString);
 
 
 
@@ -149,8 +149,10 @@ public class NetworkerManager : MonoBehaviour
                 }
 
             }
+           
             //wait until the incoming string with packet data changes then iterate again
-            yield return new WaitUntil(() => !receiveString.Equals(previousRecieveString));
+          yield return new WaitUntil(() => !receiveString.Equals(previousRecieveString));
+       
 
         }
     }
@@ -169,7 +171,7 @@ public class NetworkerManager : MonoBehaviour
         byte[] receiveBytes = client.EndReceive(result, ref ep); //get the packet
         
          receiveString = Encoding.ASCII.GetString(receiveBytes); //decode the packet
-        Debug.Log("Received " + receiveString + " from " + ep.ToString()); //display the packet
+        //Debug.Log("Received " + receiveString + " from " + ep.ToString()); //display the packet
 
 
       
@@ -183,14 +185,14 @@ public class NetworkerManager : MonoBehaviour
             int localID = Int32.Parse(betweenStrings(receiveString, ":", ";"));
             int globalID = Int32.Parse(receiveString.Substring(receiveString.IndexOf(";") + 1));
 
-            Debug.Log("Got assignment: " + localID + " local to: " + globalID + " global");
+            //Debug.Log("Got assignment: " + localID + " local to: " + globalID + " global");
 
             foreach (NetworkGameObject netObject in netObjects)
             {
                 //if the local ID sent by the server matches this game object
                 if (netObject.localID == localID)
                 {
-                    Debug.Log(localID + " : " + globalID);
+                  //  Debug.Log(localID + " : " + globalID);
                     //the global ID becomes the server-provided value
                     netObject.uniqueNetworkID = globalID;
                 }
@@ -203,6 +205,36 @@ public class NetworkerManager : MonoBehaviour
                   
                     string globalId = receiveString.Split(";")[1]; //we get the id seperate from the rest of the information string
      
+            }
+            else
+            {
+                    if (receiveString.Contains("Player shot;"))
+                    {
+
+                        if (GetGlobalIDFromPacket(receiveString) != 0)
+                        {
+
+                            string[] values = receiveString.Split(';');
+                            Debug.Log(receiveString);
+                        Debug.Log("HERL<LLOO");
+
+                        foreach (NetworkGameObject ngo in worldState)
+                            {
+                                //if it's unique ID matches the packet, update it's position from the packet
+                                if (ngo.uniqueNetworkID == int.Parse(values[1]))
+                                {
+
+                                    ngo.fromPacketShot(receiveString);
+                                    //if we have any uniqueID matches, our object is in the world
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+                
             }
         }
         
@@ -227,7 +259,7 @@ public class NetworkerManager : MonoBehaviour
     {
         while (true)
         {
-            List<NetworkGameObject> netObjects = new List<NetworkGameObject>() 
+            List<NetworkGameObject> netObjects = new List<NetworkGameObject>();
             netObjects.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>());
 
             foreach (NetworkGameObject netObject in netObjects)
@@ -243,16 +275,17 @@ public class NetworkerManager : MonoBehaviour
         }
     }
 
-    public static void EventPlayerShot(int TargetID,int damage)
+    public static void EventPlayerShot(int TargetID)
     {
         List<NetworkGameObject> netObjects = new List<NetworkGameObject>(); //this is the function responsbile for raycast detection, it will detect a raycast hit from the client side and send it over to the network, similar to movement but not constantly sent
         netObjects.AddRange(GameObject.FindObjectsOfType<NetworkGameObject>()); //we get all players
-        Debug.Log("he");
+     
         foreach (NetworkGameObject netObject in netObjects) 
         {
             if (netObject.isLocallyOwned && netObject.uniqueNetworkID != 0)
             {
-                client.Send(netObject.toPlayerShot(TargetID,damage), netObject.toPlayerShot(TargetID,damage).Length); //if its the player that hit the shot ie the local one, we will call the function over to the server
+              
+                client.Send(netObject.toPlayerShot(TargetID), netObject.toPlayerShot(TargetID).Length); //if its the player that hit the shot ie the local one, we will call the function over to the server
 
             }
         }
